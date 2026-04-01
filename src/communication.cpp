@@ -32,9 +32,9 @@ const LoRaTransmitter::Config kDefaultLoRaConfig = {
   .spreadingFactor  = 12,
   .codingRateDenom  = 8,
   .syncWord         = 0x12,
-  .txPowerdBm       = 20,
+  .txPowerdBm       = 17,
   .preambleLength   = 12,
-  .sendIntervalMs   = 5000
+  .sendIntervalMs   = 10000
 };
 
 void Logger::begin(unsigned long baud) {
@@ -176,8 +176,10 @@ void LoRaTransmitter::loop() {
 
   const uint32_t now = millis();
   if (now - lastSendAtMs_ >= config_.sendIntervalMs) {
+    // Measure the interval from the start of one transmission to the start
+    // of the next so sendIntervalMs matches the real packet cadence.
+    lastSendAtMs_ = now;
     sendPacket();
-    lastSendAtMs_ = millis();
   }
 }
 
@@ -286,6 +288,7 @@ void LoRaTransmitter::printConfig() const {
   Logger::info("CFG", "TX Power: %d dBm", config_.txPowerdBm);
   Logger::info("CFG", "Preamble Length: %u", config_.preambleLength);
   Logger::info("CFG", "Send Interval: %lu ms", static_cast<unsigned long>(config_.sendIntervalMs));
+  Logger::info("CFG", "Profile: safer long-range defaults (17 dBm, SF12, BW125, CR4/8)");
 }
 
 void LoRaTransmitter::logFailure(const char* what, int16_t code) const {
