@@ -1,10 +1,10 @@
 #include <Arduino.h>
-
 #include "communication.h"
 
 using Communication::Logger;
 using Communication::LoRaTransmitter;
 
+// Use the default pin map + LoRa config from communication.cpp
 LoRaTransmitter app(Communication::kDefaultLoRaPins, Communication::kDefaultLoRaConfig);
 
 void setup() {
